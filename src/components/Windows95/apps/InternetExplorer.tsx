@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 
-const DEFAULT_URL = 'yahoo.com';
-
 const InternetExplorer: React.FC = () => {
-  const [address, setAddress] = useState<string>(DEFAULT_URL);
+  const [address, setAddress] = useState<string>('yahoo.com');
 
   // Only show the address bar and the image for now
   return (

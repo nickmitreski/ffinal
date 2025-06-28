@@ -101,7 +101,7 @@ export const initialAppData: AppData = {
     name: 'MS Paint',
     icon: '/mspaint.png',
     position: { x: 20, y: 570 },
-    defaultSize: { width: 800, height: 600 },
+    defaultSize: { width: 1000, height: 800 },
     contentType: 'component',
     component: MSPaint,
     type: 'default',
