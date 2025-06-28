@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 const InternetExplorer: React.FC = () => {
   const [address, setAddress] = useState<string>('yahoo.com');
 
-  // Only show the address bar and the image for now
   return (
     <div style={{ padding: '5px', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div
@@ -37,8 +36,25 @@ const InternetExplorer: React.FC = () => {
         />
         <button className="win95-button" style={{ marginLeft: '5px' }} disabled title="Go">Go</button>
       </div>
-      <div style={{ flex: 1, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff' }}>
-        <img src="/yahoo.png" alt="Yahoo!" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+      <div style={{ 
+        flex: 1, 
+        width: '100%', 
+        height: '100%', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        background: '#fff',
+        overflow: 'auto'
+      }}>
+        <img 
+          src="/yahoo.png" 
+          alt="Yahoo!" 
+          style={{ 
+            maxWidth: '100%', 
+            maxHeight: '100%', 
+            objectFit: 'contain' 
+          }} 
+        />
       </div>
     </div>
   );

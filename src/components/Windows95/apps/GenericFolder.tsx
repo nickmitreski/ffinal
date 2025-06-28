@@ -31,7 +31,7 @@ const GenericFolder: React.FC<GenericFolderProps> = ({ onOpenApp, items }) => {
   const handleItemClick = (item: FolderItem, index?: number) => {
     // 1. Video files: always open in a video player window if item.path is .mp4 or .mov
     if (item.path && (/\.(mp4|mov)$/i.test(item.path))) {
-      const videoAppId = `video-${item.name.replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+      const videoAppId = `video-${item.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}-${Date.now()}-${Math.floor(Math.random()*10000)}`;
       const VideoPlayer = () => {
         const [error, setError] = React.useState<string | null>(null);
         return (
@@ -69,7 +69,7 @@ const GenericFolder: React.FC<GenericFolderProps> = ({ onOpenApp, items }) => {
       const baseY = 100;
       const offsetX = Math.floor(Math.random() * 401) - 200;
       const offsetY = Math.floor(Math.random() * 201) - 100;
-      const imageAppId = `image-${item.name.replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+      const imageAppId = `image-${item.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}-${Date.now()}-${Math.floor(Math.random()*10000)}`;
       // Dynamically size the window to fit the image
       const openImageWindow = (width: number, height: number) => {
         const ImageViewer = () => (
@@ -137,7 +137,7 @@ const GenericFolder: React.FC<GenericFolderProps> = ({ onOpenApp, items }) => {
         onOpenApp('game-mk-wiki');
       } else if (item.path && /\.(mp4|mov)$/i.test(item.path)) {
         // Open video files in a custom video player window
-        const videoAppId = `video-${item.name.replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+        const videoAppId = `video-${item.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}-${Date.now()}-${Math.floor(Math.random()*10000)}`;
         const VideoPlayer = () => (
           <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
             <video src={item.path} controls autoPlay style={{ maxWidth: '100%', maxHeight: '100%' }} />
