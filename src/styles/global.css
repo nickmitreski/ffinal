@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Host fonts locally instead of loading from external URL */
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+/* Mobile optimizations for choice screen */
+@media (max-width: 768px) {
+  .app-container {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  section {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Prevent horizontal scrolling */
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Fix for popups */
+  .fixed {
+    position: fixed !important;
+  }
+  
+  /* Ensure popups take full screen */
+  .fixed.inset-0 {
+    width: 100vw !important;
+    height: 100vh !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Windows 95 mobile optimizations */
+@media (max-width: 768px) {
+  .win95 {
+    width: 100vw;
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
+  
+  /* Improve touch targets */
+  .win95-desktop-icon, 
+  .win95-button,
+  .win95-window-button,
+  .win95-taskbar-item {
+    touch-action: manipulation;
+  }
+  
+  /* Ensure windows are properly sized */
+  .win95-window.maximized {
+    width: 100vw !important;
+    height: calc(100vh - 28px) !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 28px !important;
+    border-radius: 0 !important;
+  }
+}
