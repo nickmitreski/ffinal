@@ -111,6 +111,12 @@ export const mediaItems: FolderItem[] = [
     icon: '/promovids.png',
     path: 'https://file.garden/Zxsc5-9aojhlnJO6/flashforowarddraft.mp4',
     isBuiltIn: false
+  },
+  {
+    name: 'Content.mp4',
+    icon: '/promovids.png',
+    path: 'https://file.garden/Zxsc5-9aojhlnJO6/testimonials/contentfolio.mov',
+    isBuiltIn: false
   }
 ];
 
