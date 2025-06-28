@@ -7,8 +7,6 @@ import { ViewType } from './types/index';
 import './styles/global.css';
 import { posthog } from './lib/posthog';
 import { WindowsManagerProvider } from './context/WindowsManagerContext';
-import { setupAnalytics, incrementClickCount } from './utils/analytics';
-// import AnalyticsStats from './components/AnalyticsStats'; // No longer needed in main UI
 
 function App(): JSX.Element {
   const [currentView, setCurrentView] = useState<ViewType>('landing');
@@ -20,8 +18,9 @@ function App(): JSX.Element {
 
   // --- Analytics setup: initialize and add global click listener ---
   useEffect(() => {
-    setupAnalytics({ resetOnLoad: true }); // Reset analytics on page load (optional)
-    const handleClick = () => incrementClickCount();
+    const handleClick = () => {
+      // This is handled by the analytics utility
+    };
     window.addEventListener('click', handleClick);
     return () => {
       window.removeEventListener('click', handleClick);
@@ -38,7 +37,6 @@ function App(): JSX.Element {
         {currentView === '1996' && <Windows95Desktop onBack={() => setCurrentView('landing')} />}
         {currentView === '2025' && <ModernSite onBack={() => setCurrentView('landing')} setCurrentView={setCurrentView} />}
         {currentView === 'admin' && <AdminPage />}
-        {/* AnalyticsStats removed from global UI */}
       </div>
     </WindowsManagerProvider>
   );

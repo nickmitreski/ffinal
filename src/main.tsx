@@ -4,7 +4,7 @@ import App from './App.tsx';
 import './index.css';
 import { PostHogProvider } from 'posthog-js/react';
 import { posthog } from './lib/posthog';
-import { initAnalytics } from './lib/analytics';
+import { initAnalytics } from './utils/analytics';
 
 // Initialize analytics
 initAnalytics();
