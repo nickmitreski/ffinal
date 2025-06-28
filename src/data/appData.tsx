@@ -90,7 +90,7 @@ export const initialAppData: AppData = {
     name: 'Explorer',
     icon: '/Explorer.png',
     position: { x: 20, y: 460 },
-    defaultSize: { width: 800, height: 600 },
+    defaultSize: { width: 1000, height: 700 },
     contentType: 'component',
     component: InternetExplorer,
     type: 'default',
