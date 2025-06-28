@@ -27,10 +27,8 @@ interface WindowsManagerContextType {
 const WindowsManagerContext = createContext<WindowsManagerContextType | undefined>(undefined);
 
 export const WindowsManagerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // This is a placeholder state. You will migrate real logic here in the next step.
   const [windows, setWindows] = useState<WindowMeta[]>([]);
 
-  // Placeholder implementations
   const openWindow = (meta: Partial<WindowMeta> & { id: string }) => {
     setWindows(prev => [
       ...prev.filter(w => w.id !== meta.id),
@@ -48,14 +46,19 @@ export const WindowsManagerProvider: React.FC<{ children: ReactNode }> = ({ chil
       },
     ]);
   };
+  
   const closeWindow = (id: string) => setWindows(prev => prev.filter(w => w.id !== id));
+  
   const focusWindow = (id: string) => setWindows(prev => {
     const win = prev.find(w => w.id === id);
     if (!win) return prev;
     return [...prev.filter(w => w.id !== id), { ...win, zIndex: prev.length + 1 }];
   });
+  
   const setWindowPosition = (id: string, position: { x: number; y: number }) => setWindows(prev => prev.map(w => w.id === id ? { ...w, position } : w));
+  
   const minimizeWindow = (id: string) => setWindows(prev => prev.map(w => w.id === id ? { ...w, minimized: true } : w));
+  
   const restoreWindow = (id: string) => setWindows(prev => prev.map(w => w.id === id ? { ...w, minimized: false } : w));
 
   return (
@@ -69,4 +72,4 @@ export const useWindowsManager = () => {
   const ctx = useContext(WindowsManagerContext);
   if (!ctx) throw new Error('useWindowsManager must be used within WindowsManagerProvider');
   return ctx;
-}; 
+};

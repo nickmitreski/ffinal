@@ -56,4 +56,23 @@ export function setupAnalytics({ resetOnLoad = false }: AnalyticsOptions = {}) {
   } else {
     initSession();
   }
-} 
+}
+
+// Initialize analytics
+export function initAnalytics() {
+  // Track initial page view
+  const startTime = Date.now();
+  
+  // Track duration when user leaves the page
+  window.addEventListener('beforeunload', () => {
+    const duration = Math.floor((Date.now() - startTime) / 1000);
+  });
+  
+  // Set up click tracking
+  document.addEventListener('click', (e) => {
+    incrementClickCount();
+  });
+  
+  // Initialize session
+  setupAnalytics({ resetOnLoad: true });
+}
