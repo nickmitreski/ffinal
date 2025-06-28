@@ -135,50 +135,54 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
             backgroundColor: '#e6f7e6',
             border: '2px solid #b2e6b2',
             padding: '12px',
-            textAlign: 'center'
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}>
-            <div style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#008CFF',
-              marginBottom: '4px'
-            }}>
-              {duration}
-            </div>
             <div style={{
               fontSize: '12px',
               fontWeight: 'bold',
-              color: '#000000'
+              color: '#000000',
+              marginBottom: '4px'
             }}>
               Session Time
+            </div>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#008CFF'
+            }}>
+              {duration}
             </div>
           </div>
           <div style={{
             backgroundColor: '#fffbe6',
             border: '2px solid #ffe6b2',
             padding: '12px',
-            textAlign: 'center'
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}>
-            <div style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#FF6600',
-              marginBottom: '4px'
-            }}>
-              {clicks}
-            </div>
             <div style={{
               fontSize: '12px',
               fontWeight: 'bold',
-              color: '#000000'
+              color: '#000000',
+              marginBottom: '4px'
             }}>
               Total Clicks
+            </div>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#FF6600'
+            }}>
+              {clicks}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Industry Statistics List */}
+      {/* Industry Statistics */}
       <div style={{
         backgroundColor: '#ffffff',
         border: '2px solid #c0c0c0',
@@ -208,12 +212,14 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
                 padding: '12px',
                 boxShadow: 'inset 1px 1px 0px #ffffff, inset -1px -1px 0px #808080, 1px 1px 0px #000000',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                gap: '12px'
               }}
             >
               <div style={{
                 fontSize: '24px',
-                marginRight: '12px'
+                width: '40px',
+                textAlign: 'center'
               }}>
                 {stat.icon}
               </div>
@@ -221,20 +227,20 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
                 flex: 1
               }}>
                 <div style={{
-                  fontSize: '24px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#000000',
+                  marginBottom: '4px'
+                }}>
+                  {stat.title}
+                </div>
+                <div style={{
+                  fontSize: '18px',
                   fontWeight: 'bold',
                   color: stat.color,
                   marginBottom: '2px'
                 }}>
                   {stat.value}
-                </div>
-                <div style={{
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  color: '#000000',
-                  marginBottom: '2px'
-                }}>
-                  {stat.title}
                 </div>
                 <div style={{
                   fontSize: '10px',
