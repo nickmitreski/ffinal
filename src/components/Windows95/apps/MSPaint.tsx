@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const MSPaint: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -120,8 +120,8 @@ const MSPaint: React.FC = () => {
       >
         <canvas
           ref={canvasRef}
-          width={570}
-          height={320}
+          width={970}
+          height={720}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}

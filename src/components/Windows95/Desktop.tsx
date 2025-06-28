@@ -141,6 +141,14 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
       } else {
         finalPosition = { x: 300, y: 200 };
       }
+    } else if (appId === 'internetExplorer') {
+      // Special handling for Internet Explorer to ensure it uses the correct size
+      finalPosition = positionOverride || { x: 50, y: 50 };
+      size = sizeOverride || { width: 1000, height: 700 }; // Ensure it uses the larger size
+    } else if (appId === 'msPaint') {
+      // Special handling for MS Paint to ensure it uses the correct size
+      finalPosition = positionOverride || { x: 60, y: 60 };
+      size = sizeOverride || { width: 1000, height: 800 }; // Make MS Paint larger
     } else {
       // Calculate random offset for position for all other apps
       let basePosition: { x: number; y: number };
