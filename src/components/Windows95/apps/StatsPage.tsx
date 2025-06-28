@@ -127,8 +127,8 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
           Your Current Session
         </h2>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          display: 'flex',
+          flexDirection: 'column',
           gap: '12px'
         }}>
           <div style={{
@@ -138,19 +138,19 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
             textAlign: 'center'
           }}>
             <div style={{
-              fontSize: '12px',
+              fontSize: '24px',
               fontWeight: 'bold',
-              color: '#000000',
+              color: '#008CFF',
               marginBottom: '4px'
             }}>
-              Session Time
+              {duration}
             </div>
             <div style={{
-              fontSize: '16px',
+              fontSize: '12px',
               fontWeight: 'bold',
-              color: '#008CFF'
+              color: '#000000'
             }}>
-              {duration}
+              Session Time
             </div>
           </div>
           <div style={{
@@ -160,25 +160,25 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
             textAlign: 'center'
           }}>
             <div style={{
-              fontSize: '12px',
+              fontSize: '24px',
               fontWeight: 'bold',
-              color: '#000000',
+              color: '#FF6600',
               marginBottom: '4px'
             }}>
-              Total Clicks
+              {clicks}
             </div>
             <div style={{
-              fontSize: '16px',
+              fontSize: '12px',
               fontWeight: 'bold',
-              color: '#FF6600'
+              color: '#000000'
             }}>
-              {clicks}
+              Total Clicks
             </div>
           </div>
         </div>
       </div>
 
-      {/* Industry Statistics Grid */}
+      {/* Industry Statistics List */}
       <div style={{
         backgroundColor: '#ffffff',
         border: '2px solid #c0c0c0',
@@ -195,9 +195,9 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
           Industry Performance Metrics
         </h2>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '8px'
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px'
         }}>
           {STATS_DATA.map((stat, index) => (
             <div 
@@ -206,37 +206,42 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
                 border: '2px solid #c0c0c0',
                 backgroundColor: '#ffffff',
                 padding: '12px',
-                textAlign: 'center',
-                boxShadow: 'inset 1px 1px 0px #ffffff, inset -1px -1px 0px #808080, 1px 1px 0px #000000'
+                boxShadow: 'inset 1px 1px 0px #ffffff, inset -1px -1px 0px #808080, 1px 1px 0px #000000',
+                display: 'flex',
+                alignItems: 'center'
               }}
             >
               <div style={{
-                fontSize: '16px',
-                marginBottom: '4px'
+                fontSize: '24px',
+                marginRight: '12px'
               }}>
                 {stat.icon}
               </div>
               <div style={{
-                fontSize: '12px',
-                fontWeight: 'bold',
-                color: '#000000',
-                marginBottom: '4px'
+                flex: 1
               }}>
-                {stat.title}
-              </div>
-              <div style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: stat.color,
-                marginBottom: '2px'
-              }}>
-                {stat.value}
-              </div>
-              <div style={{
-                fontSize: '10px',
-                color: '#666666'
-              }}>
-                {stat.description}
+                <div style={{
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  color: stat.color,
+                  marginBottom: '2px'
+                }}>
+                  {stat.value}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#000000',
+                  marginBottom: '2px'
+                }}>
+                  {stat.title}
+                </div>
+                <div style={{
+                  fontSize: '10px',
+                  color: '#666666'
+                }}>
+                  {stat.description}
+                </div>
               </div>
             </div>
           ))}
@@ -341,4 +346,4 @@ const StatsPage: React.FC<StatsPageProps> = ({ onContinue }) => {
   );
 };
 
-export default StatsPage; 
+export default StatsPage;
