@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { colors, typography } from '../../../theme/theme';
-import { X, Video, Play, ExternalLink } from 'lucide-react';
+import { X, Video } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface VideosWorkPopupProps {
@@ -12,15 +12,13 @@ interface VideoProject {
   title: string;
   description: string;
   videoUrl: string;
-  thumbnailUrl: string;
   color: string;
 }
 
 const VideosWorkPopup: React.FC<VideosWorkPopupProps> = ({ onClose }) => {
   const buttonColor = colors.primary.yellow; // #FFCC00
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [selectedVideo, setSelectedVideo] = useState<VideoProject | null>(null);
-  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
   
   React.useEffect(() => {
     const handleResize = () => {
@@ -31,20 +29,12 @@ const VideosWorkPopup: React.FC<VideosWorkPopupProps> = ({ onClose }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  const videoProjects: VideoProject[] = [
-    {
-      id: 'content-folio',
-      title: 'Content Portfolio',
-      description: 'A showcase of our content creation capabilities, featuring examples of our video production work for various clients.',
-      videoUrl: 'https://file.garden/Zxsc5-9aojhlnJO6/testimonials/contentfolio.mov',
-      thumbnailUrl: '/VIDEOS.png',
-      color: '#FF1493'
-    }
-  ];
-  
-  const handleVideoSelect = (video: VideoProject) => {
-    setSelectedVideo(video);
-    setIsVideoLoading(true);
+  const videoProject: VideoProject = {
+    id: 'content-folio',
+    title: 'Content Portfolio',
+    description: 'A showcase of our content creation capabilities, featuring examples of our video production work for various clients.',
+    videoUrl: 'https://file.garden/Zxsc5-9aojhlnJO6/testimonials/contentfolio.mov',
+    color: '#FF1493'
   };
   
   return (
@@ -69,7 +59,7 @@ const VideosWorkPopup: React.FC<VideosWorkPopupProps> = ({ onClose }) => {
               <Video size={18} style={{ color: buttonColor }} />
             </div>
             <h2 className={`${typography.fontSize['2xl']} ${typography.fontFamily.light} ${typography.tracking.tight} text-white`}>
-              Video Projects
+              {videoProject.title}
             </h2>
           </div>
           <button 
@@ -81,72 +71,25 @@ const VideosWorkPopup: React.FC<VideosWorkPopupProps> = ({ onClose }) => {
         </div>
         
         <div className="p-6">
-          {selectedVideo ? (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className={`${typography.fontSize['2xl']} ${typography.fontFamily.light} ${typography.tracking.tight}`} style={{ color: selectedVideo.color }}>
-                  {selectedVideo.title}
-                </h3>
-                <button
-                  onClick={() => setSelectedVideo(null)}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              
-              <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-                {isVideoLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <div className="w-12 h-12 border-4 border-gray-600 border-t-white rounded-full animate-spin"></div>
-                  </div>
-                )}
-                <video
-                  src={selectedVideo.videoUrl}
-                  controls
-                  autoPlay
-                  className="w-full h-full object-contain"
-                  onCanPlay={() => setIsVideoLoading(false)}
-                  onError={() => setIsVideoLoading(false)}
-                />
-              </div>
-              
-              <p className="text-gray-300">{selectedVideo.description}</p>
+          <div className="space-y-6">
+            <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+              {isVideoLoading && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  <div className="w-12 h-12 border-4 border-gray-600 border-t-white rounded-full animate-spin"></div>
+                </div>
+              )}
+              <video
+                src={videoProject.videoUrl}
+                controls
+                autoPlay
+                className="w-full h-full object-contain"
+                onCanPlay={() => setIsVideoLoading(false)}
+                onError={() => setIsVideoLoading(false)}
+              />
             </div>
-          ) : (
-            <div className="space-y-6">
-              <p className="text-gray-300 mb-6">
-                Explore our video production work. Click on a project to view the video.
-              </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {videoProjects.map((video) => (
-                  <div
-                    key={video.id}
-                    className="bg-black/30 border border-gray-800 rounded-lg overflow-hidden cursor-pointer hover:border-gray-600 transition-colors"
-                    onClick={() => handleVideoSelect(video)}
-                  >
-                    <div className="relative aspect-video">
-                      <img
-                        src={video.thumbnailUrl}
-                        alt={video.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                          <Play size={32} className="text-white ml-1" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-white font-light text-lg mb-2">{video.title}</h3>
-                      <p className="text-gray-400 text-sm line-clamp-2">{video.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+            
+            <p className="text-gray-300">{videoProject.description}</p>
+          </div>
         </div>
         
         <div className="p-6 border-t border-gray-800 flex justify-end">
