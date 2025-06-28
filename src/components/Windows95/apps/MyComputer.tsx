@@ -37,7 +37,7 @@ const MyComputer: React.FC = () => {
       </div>
       <div className="win95-folder-item">
         <img 
-          src="/BatExec2_32x32_4.png" 
+          src="/images/icons/Mapi32451_32x32_4.png" 
           alt="Printers" 
           className="win95-folder-item-icon" 
         />
