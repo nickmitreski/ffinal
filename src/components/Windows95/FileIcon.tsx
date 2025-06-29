@@ -9,11 +9,28 @@ interface FileIconProps {
 }
 
 const FileIcon: React.FC<FileIconProps> = ({ icon, name, onOpen, openOnSingleClick, className }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (openOnSingleClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      onOpen();
+    }
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    if (!openOnSingleClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      onOpen();
+    }
+  };
+
   return (
     <div
       className={`win95-folder-item${className ? ' ' + className : ''}`}
-      onDoubleClick={() => { if (!openOnSingleClick) onOpen(); }}
-      onClick={() => { if (openOnSingleClick) onOpen(); }}
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      data-file-name={name}
     >
       <img
         src={icon}
@@ -25,4 +42,4 @@ const FileIcon: React.FC<FileIconProps> = ({ icon, name, onOpen, openOnSingleCli
   );
 };
 
-export default FileIcon; 
+export default FileIcon;

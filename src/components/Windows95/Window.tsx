@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useWindowsContext } from '../../contexts/WindowsContext';
 import useSound from 'use-sound';
 import { WindowProps } from '../../types/window';
@@ -51,7 +51,7 @@ const Window: React.FC<WindowProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [id, bringToFront]);
 
-  // Auto-maximize on mobile - fixed to apply immediately
+  // Auto-maximize on mobile
   useEffect(() => {
     if (isMobile && !windowState.isMaximized) {
       handleMaximize();
@@ -66,6 +66,12 @@ const Window: React.FC<WindowProps> = ({
   const handleMaximizeClick = () => {
     playMaximize();
     handleMaximize();
+  };
+
+  const handleCloseClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
   };
 
   if (isMinimized) {
@@ -125,7 +131,7 @@ const Window: React.FC<WindowProps> = ({
           >□</button>
           <button 
             className="win95-window-button" 
-            onClick={onClose}
+            onClick={handleCloseClick}
             style={isMobile ? { width: '20px', height: '18px' } : undefined}
           >×</button>
         </div>

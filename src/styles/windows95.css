@@ -172,6 +172,19 @@
   align-items: center;
   position: absolute;
   cursor: pointer;
+  z-index: 1;
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+.win95-desktop-icon:hover {
+  background-color: rgba(0, 0, 128, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.win95-desktop-icon:active {
+  background-color: rgba(0, 0, 128, 0.2);
 }
 
 .win95-desktop-icon-img {
@@ -179,6 +192,7 @@
   height: var(--win95-desktop-icon-size);
   margin-bottom: 4px;
   object-fit: contain;
+  pointer-events: none;
 }
 
 .win95-desktop-icon-text {
@@ -189,6 +203,7 @@
   max-width: 90px;
   word-wrap: break-word;
   line-height: 1.2;
+  pointer-events: none;
 }
 
 .win95-taskbar {
@@ -313,18 +328,30 @@
   text-align: center;
   padding: 4px;
   border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.win95-folder-item:hover {
+  background-color: rgba(0, 0, 128, 0.1);
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+.win95-folder-item:active {
+  background-color: rgba(0, 0, 128, 0.2);
 }
 
 .win95-folder-item-icon {
   width: 35px;
   height: 35px;
   margin-bottom: 4px;
+  pointer-events: none;
 }
 
 .win95-folder-item-text {
   font-size: 11px;
   max-width: 90px;
   word-wrap: break-word;
+  pointer-events: none;
 }
 
 .calculator-display {
@@ -396,7 +423,7 @@
   min-height: 32px;
 }
 
-.win95-start-menu-item:active {
+.win95-start-menu-item:hover {
   background-color: #000080;
   color: white;
 }
@@ -425,6 +452,7 @@
   box-shadow: 1px 1px 0 0 var(--win95-border-inner-dark) inset, -1px -1px 0 0 var(--win95-border-inner-light) inset;
   min-width: 160px;
   padding: 2px;
+  z-index: 1000;
 }
 
 .win95-context-menu-item {
@@ -436,7 +464,7 @@
   font-size: 12px;
 }
 
-.win95-context-menu-item:active {
+.win95-context-menu-item:hover {
   background-color: #000080;
   color: white;
 }
@@ -487,8 +515,7 @@
 }
 
 .win95-services-item {
-  border: 2px solid;
-  border-color: var(--win95-border-outer-light) var(--win95-border-outer-dark) var(--win95-border-outer-dark) var(--win95-border-outer-light);
+  border: 1px solid #a0a0a0;
   background: white;
 }
 

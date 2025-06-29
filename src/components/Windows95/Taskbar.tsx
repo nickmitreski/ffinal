@@ -14,7 +14,7 @@ const Taskbar: React.FC<TaskbarProps> = ({ openApps, onAppClick, onBack }) => {
   const [playStartSound] = useSound('/sounds/windows95-startup.mp3');
   const [isMobile, setIsMobile] = useState(false);
   
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
@@ -44,6 +44,11 @@ const Taskbar: React.FC<TaskbarProps> = ({ openApps, onAppClick, onBack }) => {
   const handleStartButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleStartMenu();
+  };
+
+  const handleTaskbarItemClick = (id: string) => {
+    console.log(`Taskbar item clicked: ${id}`);
+    onAppClick(id);
   };
   
   return (
@@ -78,7 +83,7 @@ const Taskbar: React.FC<TaskbarProps> = ({ openApps, onAppClick, onBack }) => {
             <div 
               key={app.id} 
               className={`win95-taskbar-item ${app.isMinimized ? 'active' : ''}`}
-              onClick={() => onAppClick(app.id)}
+              onClick={() => handleTaskbarItemClick(app.id)}
             >
               {isMobile ? app.name.substring(0, 10) + (app.name.length > 10 ? '...' : '') : app.name}
             </div>

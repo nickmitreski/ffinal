@@ -22,6 +22,9 @@ export const useWindowManager = ({
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
   const animationFrameRef = useRef<number>();
   const isMobileRef = useRef(window.innerWidth <= 768);
+  const resizingRef = useRef(false);
+  const resizeStartSizeRef = useRef<Size | null>(null);
+  const resizeStartPosRef = useRef<{ x: number; y: number } | null>(null);
   
   const [windowState, setWindowState] = useState<WindowState>({
     position: initialPosition,
@@ -97,6 +100,10 @@ export const useWindowManager = ({
     const window = windowRef.current;
     if (!window) return;
 
+    // Check if this is a resize handle click
+    const isResizeHandle = (e.target as HTMLElement).className === 'win95-window-resize-handle';
+    resizingRef.current = isResizeHandle;
+
     setWindowState(prev => ({ ...prev, isDragging: true }));
     window.classList.add('dragging');
     bringToFront(id);
@@ -105,20 +112,36 @@ export const useWindowManager = ({
     if ('touches' in e) {
       // Touch event
       const touch = e.touches[0];
-      dragStartPosRef.current = {
-        x: touch.clientX - window.offsetLeft,
-        y: touch.clientY - window.offsetTop
-      };
+      if (isResizeHandle) {
+        resizeStartSizeRef.current = { ...windowState.size };
+        resizeStartPosRef.current = {
+          x: touch.clientX,
+          y: touch.clientY
+        };
+      } else {
+        dragStartPosRef.current = {
+          x: touch.clientX - window.offsetLeft,
+          y: touch.clientY - window.offsetTop
+        };
+      }
     } else {
       // Mouse event
-      dragStartPosRef.current = {
-        x: e.clientX - window.offsetLeft,
-        y: e.clientY - window.offsetTop
-      };
+      if (isResizeHandle) {
+        resizeStartSizeRef.current = { ...windowState.size };
+        resizeStartPosRef.current = {
+          x: e.clientX,
+          y: e.clientY
+        };
+      } else {
+        dragStartPosRef.current = {
+          x: e.clientX - window.offsetLeft,
+          y: e.clientY - window.offsetTop
+        };
+      }
     }
 
     e.preventDefault();
-  }, [windowState.isMaximized, bringToFront, id]);
+  }, [windowState.isMaximized, bringToFront, id, windowState.size]);
 
   useEffect(() => {
     if (!windowState.isDragging) return;
@@ -127,7 +150,7 @@ export const useWindowManager = ({
     if (!window) return;
 
     const handleMouseMove = (e: MouseEvent | TouchEvent) => {
-      if (!windowState.isDragging || !dragStartPosRef.current) return;
+      if (!windowState.isDragging) return;
 
       animationFrameRef.current = requestAnimationFrame(() => {
         let clientX, clientY;
@@ -143,19 +166,34 @@ export const useWindowManager = ({
           clientY = (e as MouseEvent).clientY;
         }
         
-        const newX = clientX - dragStartPosRef.current!.x;
-        const newY = clientY - dragStartPosRef.current!.y;
-        
-        const maxX = window.parentElement?.clientWidth ?? window.ownerDocument.documentElement.clientWidth;
-        const maxY = (window.parentElement?.clientHeight ?? window.ownerDocument.documentElement.clientHeight) - 28;
-        
-        const boundedX = Math.max(0, Math.min(newX, maxX - window.offsetWidth));
-        const boundedY = Math.max(0, Math.min(newY, maxY - window.offsetHeight));
-        
-        setWindowState(prev => ({
-          ...prev,
-          position: { x: boundedX, y: boundedY }
-        }));
+        if (resizingRef.current && resizeStartSizeRef.current && resizeStartPosRef.current) {
+          // Resizing
+          const deltaX = clientX - resizeStartPosRef.current.x;
+          const deltaY = clientY - resizeStartPosRef.current.y;
+          
+          const newWidth = Math.max(200, resizeStartSizeRef.current.width + deltaX);
+          const newHeight = Math.max(150, resizeStartSizeRef.current.height + deltaY);
+          
+          setWindowState(prev => ({
+            ...prev,
+            size: { width: newWidth, height: newHeight }
+          }));
+        } else if (dragStartPosRef.current) {
+          // Moving
+          const newX = clientX - dragStartPosRef.current.x;
+          const newY = clientY - dragStartPosRef.current.y;
+          
+          const maxX = window.parentElement?.clientWidth ?? window.ownerDocument.documentElement.clientWidth;
+          const maxY = (window.parentElement?.clientHeight ?? window.ownerDocument.documentElement.clientHeight) - 28;
+          
+          const boundedX = Math.max(0, Math.min(newX, maxX - window.offsetWidth));
+          const boundedY = Math.max(0, Math.min(newY, maxY - window.offsetHeight));
+          
+          setWindowState(prev => ({
+            ...prev,
+            position: { x: boundedX, y: boundedY }
+          }));
+        }
       });
     };
 
@@ -163,6 +201,9 @@ export const useWindowManager = ({
       setWindowState(prev => ({ ...prev, isDragging: false }));
       window.classList.remove('dragging');
       dragStartPosRef.current = null;
+      resizingRef.current = false;
+      resizeStartSizeRef.current = null;
+      resizeStartPosRef.current = null;
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }

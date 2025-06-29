@@ -95,6 +95,7 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
     positionOverride?: { x: number; y: number }, 
     sizeOverride?: { width: number; height: number }
   ) => {
+    console.log(`Opening app: ${appId}`);
     posthog.capture('app_opened', { app_id: appId });
 
     // Get app size
@@ -121,10 +122,12 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
       finalPosition = positionOverride || { x: 300, y: 200 };
     } else if (appId === 'internetExplorer') {
       finalPosition = positionOverride || { x: 50, y: 50 };
-      size = sizeOverride || { width: 1000, height: 700 };
+      size.width = sizeOverride?.width || 1000;
+      size.height = sizeOverride?.height || 700;
     } else if (appId === 'msPaint') {
       finalPosition = positionOverride || { x: 60, y: 60 };
-      size = sizeOverride || { width: 1000, height: 800 };
+      size.width = sizeOverride?.width || 1000;
+      size.height = sizeOverride?.height || 800;
     } else {
       // Default positioning with random offset
       let basePosition: { x: number; y: number };

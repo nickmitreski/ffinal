@@ -13,6 +13,7 @@ const Icon: React.FC<IconProps> = ({ id, name, icon, x, y, onOpen }) => {
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log(`Opening icon: ${name}`);
     onOpen();
   };
 
