@@ -282,13 +282,13 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
         )}
         {/* Classic Windows icon layout: two vertical columns, media icon at top of right column */}
         {(() => {
-          // First column: My Computer, Documents, Recycle Bin, Calculator, Explorer, MS Paint, Winamp, Notepad
+          // First column: My Computer, Documents, Recycle Bin, Calculator, Explorer, MS Paint, Winamp
           const firstColumnIds = [
-            'myComputer', 'myDocuments', 'recycleBin', 'calculator', 'internetExplorer', 'msPaint', 'winamp', 'notepad'
+            'myComputer', 'myDocuments', 'recycleBin', 'calculator', 'internetExplorer', 'msPaint', 'winamp'
           ];
-          // Second column: Media at top, then Games, AI Stuff, TV, Flash Forward
+          // Second column: Notepad at top, then Media, Games, AI Stuff, TV, Flash Forward
           const secondColumnIds = [
-            'mediaFolder', 'gamesFolder', 'aiStuffFolder', 'tv', 'flashForwardFolder'
+            'notepad', 'mediaFolder', 'gamesFolder', 'aiStuffFolder', 'tv', 'flashForwardFolder'
           ];
           const icons = [
             ...firstColumnIds.map(id => appData[id]).filter(Boolean),
@@ -299,7 +299,7 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
           const xSpacing = 120;
           const ySpacing = 85;
           return icons.map((app, i) => {
-            // First column: 0-7, Second column: 8-12
+            // First column: 0-6, Second column: 7-12
             const col = i < firstColumnIds.length ? 0 : 1;
             const row = col === 0 ? i : i - firstColumnIds.length;
             const x = xStart + col * xSpacing;
