@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Icon from './Icon';
-import Window from './Window';
 import Taskbar from './Taskbar';
 import DesktopContextMenu from './DesktopContextMenu';
 import TutorialPopup from './TutorialPopup';
 import { WindowsContextProvider } from '../../contexts/WindowsContext';
-import { AppData, AppConfig, initialAppData, AppContentProps } from '../../data/appData.tsx';
+import { AppData, initialAppData, AppContentProps } from '../../data/appData.tsx';
 import { Windows95DesktopProps } from '../../types';
 import useSound from 'use-sound';
 import '../../styles/windows95.css';
-import { WindowType } from '../../types/window';
 import { posthog } from '../../lib/posthog';
 import { useWindowsManager } from '../../context/WindowsManagerContext';
 import WindowManager from './WindowManager';
@@ -19,54 +17,23 @@ interface ContextMenuPosition {
   y: number;
 }
 
-// Define a type that combines AppConfig and the dynamic app structure
-type CombinedAppConfig = AppConfig | {
-  content: React.ReactNode;
-  title: string;
-  name?: string;
-  defaultSize?: { width: number; height: number };
-  position?: { x: number; y: number };
-  contentType?: string;
-  url?: string;
-  icon?: string;
-  type?: WindowType;
-  isResizable?: boolean;
-  isAlwaysOnTop?: boolean;
-};
-
 const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
+  // State
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [appData] = useState<AppData>(initialAppData);
   
+  // Sounds
   const [playMinimize] = useSound('/sounds/windows95-minimize.mp3');
   const [playMaximize] = useSound('/sounds/windows95-maximize.mp3');
   const [playStartup] = useSound('/sounds/windows95-startup.mp3', { volume: 0.5 });
   const [playShutdown] = useSound('/sounds/windows95-shutdown.mp3', { volume: 0.5 });
 
-  const { windows, openWindow, closeWindow, minimizeWindow, restoreWindow, focusWindow } = useWindowsManager();
+  // Window management
+  const { windows, openWindow, closeWindow, minimizeWindow, restoreWindow } = useWindowsManager();
 
-  useEffect(() => {
-    // Play startup sound when component mounts
-    playStartup();
-    
-    // Track page view with PostHog
-    posthog.capture('page_view', { page: 'windows95_desktop' });
-    
-    // Check if device is mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, [playStartup]);
-
+  // Tutorial steps
   const tutorialSteps = [
     {
       message: "Welcome to 1996! This is a Windows 95 desktop experience.",
@@ -82,75 +49,84 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
     }
   ];
 
-  const handleTutorialClose = () => {
+  // Check if device is mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Play startup sound when component mounts
+    playStartup();
+    
+    // Track page view with PostHog
+    posthog.capture('page_view', { page: 'windows95_desktop' });
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, [playStartup]);
+
+  // Handle tutorial progression
+  const handleTutorialClose = useCallback(() => {
     posthog.capture('tutorial_step_completed', { step: currentTutorialStep + 1 });
     setCurrentTutorialStep(prev => prev + 1);
-  };
+  }, [currentTutorialStep]);
 
-  const getRandomOffset = () => Math.floor(Math.random() * 61) - 30; // -30 to +30
+  // Helper functions for window positioning
+  const getRandomOffset = useCallback(() => Math.floor(Math.random() * 61) - 30, []); // -30 to +30
 
-  const clampPositionToViewport = (x: number, y: number, width: number, height: number) => {
+  const clampPositionToViewport = useCallback((x: number, y: number, width: number, height: number) => {
     const maxX = window.innerWidth - width;
     const maxY = window.innerHeight - 28 - height; // 28px for taskbar
     return {
       x: Math.max(0, Math.min(x, maxX)),
       y: Math.max(0, Math.min(y, maxY)),
     };
-  };
+  }, []);
 
-  const handleOpenApp = (appId: string, content?: React.ReactNode, title?: string, positionOverride?: { x: number; y: number }, sizeOverride?: { width: number; height: number }) => {
+  // Handle opening an app
+  const handleOpenApp = useCallback((
+    appId: string, 
+    content?: React.ReactNode, 
+    title?: string, 
+    positionOverride?: { x: number; y: number }, 
+    sizeOverride?: { width: number; height: number }
+  ) => {
     posthog.capture('app_opened', { app_id: appId });
 
-    // Use the correct size for this app
+    // Get app size
     const appDefaultSize = appData[appId]?.defaultSize || { width: 400, height: 300 };
     const size = sizeOverride || appDefaultSize;
 
+    // Determine window position
     let finalPosition: { x: number; y: number };
     let zIndex = windows.length + 1;
     
+    // Special case positioning for specific apps
     if (appId === 'winamp') {
       finalPosition = { x: 100, y: 100 };
       zIndex = Math.max(...windows.map(w => w.zIndex || 1), 1) + 1;
     } else if (appId === 'flashForwardFolder') {
       finalPosition = { x: 130, y: 40 };
     } else if (appId === 'servicesWindow') {
-      // Services window - use positionOverride if provided, otherwise use default
-      if (positionOverride) {
-        finalPosition = positionOverride;
-      } else {
-        finalPosition = { x: 150, y: 80 };
-      }
+      finalPosition = positionOverride || { x: 150, y: 80 };
     } else if (appId === 'pricingWindow') {
-      // Pricing window - use positionOverride if provided, otherwise use default
-      if (positionOverride) {
-        finalPosition = positionOverride;
-      } else {
-        finalPosition = { x: 200, y: 120 };
-      }
+      finalPosition = positionOverride || { x: 200, y: 120 };
     } else if (appId === 'contactUsWindow') {
-      // Contact Us window - use positionOverride if provided, otherwise use default
-      if (positionOverride) {
-        finalPosition = positionOverride;
-      } else {
-        finalPosition = { x: 250, y: 160 };
-      }
+      finalPosition = positionOverride || { x: 250, y: 160 };
     } else if (appId === 'ourWork') {
-      // Our Work window - use positionOverride if provided, otherwise use default
-      if (positionOverride) {
-        finalPosition = positionOverride;
-      } else {
-        finalPosition = { x: 300, y: 200 };
-      }
+      finalPosition = positionOverride || { x: 300, y: 200 };
     } else if (appId === 'internetExplorer') {
-      // Special handling for Internet Explorer to ensure it uses the correct size
       finalPosition = positionOverride || { x: 50, y: 50 };
-      size = sizeOverride || { width: 1000, height: 700 }; // Ensure it uses the larger size
+      size = sizeOverride || { width: 1000, height: 700 };
     } else if (appId === 'msPaint') {
-      // Special handling for MS Paint to ensure it uses the correct size
       finalPosition = positionOverride || { x: 60, y: 60 };
-      size = sizeOverride || { width: 1000, height: 800 }; // Make MS Paint larger
+      size = sizeOverride || { width: 1000, height: 800 };
     } else {
-      // Calculate random offset for position for all other apps
+      // Default positioning with random offset
       let basePosition: { x: number; y: number };
       if (positionOverride) {
         basePosition = positionOverride;
@@ -159,15 +135,18 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
       } else {
         basePosition = { x: 100, y: 100 };
       }
+      
       const randomOffset = { x: getRandomOffset(), y: getRandomOffset() };
       finalPosition = {
         x: basePosition.x + randomOffset.x,
         y: basePosition.y + randomOffset.y
       };
-      // Clamp so window is always fully visible
+      
+      // Ensure window is fully visible
       finalPosition = clampPositionToViewport(finalPosition.x, finalPosition.y, size.width, size.height);
     }
 
+    // Create window with provided content or from app data
     if (content !== undefined && title !== undefined) {
       openWindow({
         id: appId,
@@ -182,7 +161,9 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
       openWindow({
         id: appId,
         title: title || appData[appId]?.name || appId,
-        content: appData[appId].contentType === 'component' ? React.createElement(appData[appId].component as React.ComponentType<AppContentProps>, { onOpenApp: handleOpenApp }) : undefined,
+        content: appData[appId].contentType === 'component' 
+          ? React.createElement(appData[appId].component as React.ComponentType<AppContentProps>, { onOpenApp: handleOpenApp }) 
+          : undefined,
         position: finalPosition,
         size,
         zIndex,
@@ -194,55 +175,45 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
     } else {
       console.error(`Data for app ${appId} not found.`);
     }
-  };
+  }, [appData, clampPositionToViewport, getRandomOffset, openWindow, windows]);
 
-  const handleCloseApp = (appId: string) => {
-    // Track app closing with PostHog
+  // Handle closing an app
+  const handleCloseApp = useCallback((appId: string) => {
     posthog.capture('app_closed', { app_id: appId });
-    
     closeWindow(appId);
-  };
+  }, [closeWindow]);
 
-  const handleMinimize = (appId: string) => {
-    // Track app minimizing with PostHog
+  // Handle minimizing an app
+  const handleMinimize = useCallback((appId: string) => {
     posthog.capture('app_minimized', { app_id: appId });
-    
     minimizeWindow(appId);
-  };
+  }, [minimizeWindow]);
 
-  const handleRestore = (appId: string) => {
-    // ... existing code ...
-    restoreWindow(appId);
-  };
-
-  const handleContextMenu = (e: React.MouseEvent) => {
+  // Handle context menu
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     // Only show context menu if clicking directly on the desktop
     if (e.target === e.currentTarget) {
       setContextMenu({ x: e.clientX, y: e.clientY });
-      
-      // Track context menu opening with PostHog
       posthog.capture('desktop_context_menu_opened');
     }
-  };
+  }, []);
 
-  const handleArrangeIcons = () => {
-    // Implement icon arrangement logic
+  // Context menu actions
+  const handleArrangeIcons = useCallback(() => {
     posthog.capture('desktop_icons_arranged');
-  };
+  }, []);
 
-  const handleRefresh = () => {
-    // Implement refresh logic
+  const handleRefresh = useCallback(() => {
     posthog.capture('desktop_refreshed');
-  };
+  }, []);
 
-  const handleNewFolder = () => {
-    // Implement new folder creation logic
+  const handleNewFolder = useCallback(() => {
     posthog.capture('new_folder_created');
-  };
+  }, []);
 
-  const handleBackToModern = () => {
-    // Play shutdown sound and wait for it to finish before navigating
+  // Handle back to modern site
+  const handleBackToModern = useCallback(() => {
     playShutdown();
     posthog.capture('windows95_exit');
     
@@ -250,19 +221,49 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
     setTimeout(() => {
       onBack();
     }, 1500);
-  };
+  }, [onBack, playShutdown]);
 
-  // Adjust icon positions for mobile
-  const getAdjustedIconPosition = (originalPosition: { x: number; y: number }) => {
-    if (!isMobile) return originalPosition;
+  // Desktop icon configuration
+  const renderDesktopIcons = useCallback(() => {
+    // First column: My Computer, Documents, Recycle Bin, Calculator, Explorer, MS Paint, Winamp
+    const firstColumnIds = [
+      'myComputer', 'myDocuments', 'recycleBin', 'calculator', 'internetExplorer', 'msPaint', 'winamp'
+    ];
     
-    // Scale down positions for mobile
-    const scaleFactor = 0.7;
-    return {
-      x: originalPosition.x * scaleFactor,
-      y: originalPosition.y * scaleFactor
-    };
-  };
+    // Second column: Notepad at top, then Media, Games, AI Stuff, TV, Flash Forward
+    const secondColumnIds = [
+      'notepad', 'mediaFolder', 'gamesFolder', 'aiStuffFolder', 'tv', 'flashForwardFolder'
+    ];
+    
+    const icons = [
+      ...firstColumnIds.map(id => appData[id]).filter(Boolean),
+      ...secondColumnIds.map(id => appData[id]).filter(Boolean)
+    ];
+    
+    const xStart = 20;
+    const yStart = 20;
+    const xSpacing = 120;
+    const ySpacing = 100; // Increased vertical spacing
+    
+    return icons.map((app, i) => {
+      const col = i < firstColumnIds.length ? 0 : 1;
+      const row = col === 0 ? i : i - firstColumnIds.length;
+      const x = xStart + col * xSpacing;
+      const y = yStart + row * ySpacing;
+      
+      return (
+        <Icon
+          key={app.name}
+          id={app.name}
+          name={app.name}
+          icon={app.icon}
+          x={x}
+          y={y}
+          onOpen={() => handleOpenApp(app.name)}
+        />
+      );
+    });
+  }, [appData, handleOpenApp]);
 
   return (
     <WindowsContextProvider onBack={onBack}>
@@ -271,6 +272,7 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
         onContextMenu={handleContextMenu}
         onClick={() => setContextMenu(null)}
       >
+        {/* Tutorial Popup */}
         {currentTutorialStep < tutorialSteps.length && (
           <TutorialPopup
             message={tutorialSteps[currentTutorialStep].message}
@@ -280,45 +282,14 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
               tutorialSteps[currentTutorialStep].position}
           />
         )}
-        {/* Classic Windows icon layout: two vertical columns, media icon at top of right column */}
-        {(() => {
-          // First column: My Computer, Documents, Recycle Bin, Calculator, Explorer, MS Paint, Winamp
-          const firstColumnIds = [
-            'myComputer', 'myDocuments', 'recycleBin', 'calculator', 'internetExplorer', 'msPaint', 'winamp'
-          ];
-          // Second column: Notepad at top, then Media, Games, AI Stuff, TV, Flash Forward
-          const secondColumnIds = [
-            'notepad', 'mediaFolder', 'gamesFolder', 'aiStuffFolder', 'tv', 'flashForwardFolder'
-          ];
-          const icons = [
-            ...firstColumnIds.map(id => appData[id]).filter(Boolean),
-            ...secondColumnIds.map(id => appData[id]).filter(Boolean)
-          ];
-          const xStart = 20;
-          const yStart = 20;
-          const xSpacing = 120;
-          const ySpacing = 85;
-          return icons.map((app, i) => {
-            // First column: 0-6, Second column: 7-12
-            const col = i < firstColumnIds.length ? 0 : 1;
-            const row = col === 0 ? i : i - firstColumnIds.length;
-            const x = xStart + col * xSpacing;
-            const y = yStart + row * ySpacing;
-            return (
-              <Icon
-                key={app.name}
-                id={app.name}
-                name={app.name}
-                icon={app.icon}
-                x={x}
-                y={y}
-                onOpen={() => handleOpenApp(app.name, app.contentType === 'component' ? React.createElement(app.component as React.ComponentType<AppContentProps>, { onOpenApp: handleOpenApp }) : undefined, app.name)}
-              />
-            );
-          });
-        })()}
-        {/* Render all windows using WindowManager */}
+        
+        {/* Desktop Icons */}
+        {renderDesktopIcons()}
+        
+        {/* Windows */}
         <WindowManager />
+        
+        {/* Context Menu */}
         {contextMenu && (
           <DesktopContextMenu
             x={contextMenu.x}
@@ -329,6 +300,8 @@ const Desktop: React.FC<Windows95DesktopProps> = ({ onBack }) => {
             onNewFolder={handleNewFolder}
           />
         )}
+        
+        {/* Taskbar */}
         <Taskbar 
           openApps={windows.map(win => ({
             id: win.id,
